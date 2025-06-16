@@ -1,6 +1,6 @@
 from card import Card
 
-def colony_vp(player = none):
+def colony_vp(player = None):
     return 10  # +10 VP
 
 Colony = Card(

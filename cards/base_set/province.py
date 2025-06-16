@@ -1,6 +1,6 @@
 from card import Card
 
-def province_vp(player = none):
+def province_vp(player = None):
     return 6  # +6 VP
 
 Province = Card(

@@ -1,6 +1,6 @@
 from card import Card
 
-def duchy_vp(player, game):
+def duchy_vp(player = None):
     return 3  # +3 VP
 
 Duchy = Card(

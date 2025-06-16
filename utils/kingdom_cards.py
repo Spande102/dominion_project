@@ -1,6 +1,5 @@
 import random
 
-
 def choose_kingdom_cards(cards_by_expansion):
     print("\nChoose kingdom setup method:")
     print("1. Randomize 10 Kingdom cards")
@@ -22,23 +21,22 @@ def randomize_kingdom_cards(cards_by_expansion):
     for i, exp in enumerate(expansions, 1):
         print(f"{i}. {exp}")
 
-    selected_indices = input(
-        "\nEnter expansion numbers to include (comma-separated), or press Enter for all: "
-    ).strip()
+    selected = input("\nEnter expansion numbers to include (comma-separated), or press Enter for all: ").strip()
 
-    if selected_indices:
+    if selected:
         try:
-            chosen_expansions = [expansions[int(i.strip()) - 1] for i in selected_indices.split(",")]
+            chosen_expansions = [expansions[int(i.strip()) - 1] for i in selected.split(",")]
         except (ValueError, IndexError):
             print("Invalid input. Using all expansions instead.")
             chosen_expansions = expansions
     else:
         chosen_expansions = expansions
 
+    # Build a pool of Action-type cards
     pool = [
         card for exp in chosen_expansions
         for card in cards_by_expansion[exp]
-        if any(t.lower() == "action" for t in card.card_type):
+        if "Action" in [t.capitalize() for t in card.card_type]
     ]
 
     if len(pool) < 10:
@@ -55,7 +53,7 @@ def manually_choose_kingdom_cards(cards_by_expansion):
     for expansion, cards in cards_by_expansion.items():
         print(f"\n[{expansion}]")
         for card in cards:
-            if any(t.lower() == "action" for t in card.card_type):
+            if "Action" in [t.capitalize() for t in card.card_type]:
                 print(f" - {card.name}")
                 all_action_cards[card.name.lower()] = card
 

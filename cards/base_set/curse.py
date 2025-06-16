@@ -1,6 +1,6 @@
 from card import Card
 
-def curse_vp(player = none):
+def curse_vp(player = None):
     return -1  # -1 VP
 
 Curse = Card(
