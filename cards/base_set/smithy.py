@@ -7,7 +7,7 @@ def smithy_effect(player, game):
 Smithy = Card(
     "Smithy",
     cost = 4,
-    card_type = "Action",
+    card_type = ['Action'],
     description = "+3 Cards",
     effect = smithy_effect,
     expansion = "base"

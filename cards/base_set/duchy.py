@@ -6,7 +6,7 @@ def duchy_vp(player, game):
 Duchy = Card(
     "Duchy",
     cost = 5,
-    card_type = "Victory",
+    card_type = ['Victory'],
     description = "+3 VP",
     effect = None,
     expansion = "base"

@@ -7,7 +7,7 @@ def lab_effect(player, game):
 Laboratory = Card(
     "Laboratory",
     cost=5,
-    card_type="Action",
+    card_type = ['Action'],
     description="+2 Cards, +1 Actions",
     effect=lab_effect,
     expansion = "base"

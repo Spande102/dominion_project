@@ -6,7 +6,7 @@ def estate_vp(player=None):
 Estate = Card(
     "Estate",
     cost=2,
-    card_type="Victory",
+    card_type = ['Victory'],
     description="1 VP",
     effect=None,
     expansion="base"

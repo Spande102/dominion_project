@@ -10,7 +10,7 @@ def market_effect(player, game):
 Market = Card(
     "Market",
     cost = 5,
-    card_type = "Action",
+    card_type = ['Action'],
     description = "+1 Card, +1 Action, +1 Buy, +1 Coin",
     effect = market_effect,
     expansion = "base"

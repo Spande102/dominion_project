@@ -32,7 +32,7 @@ def remodel_effect(player, game):
 Remodel = Card(
     "Remodel",
     cost = 4,
-    card_type = "Action",
+    card_type = ['Action'],
     description = "Trash a card from your hand. Gain a card costing up to 2 more.",
     effect = remodel_effect,
     expansion = "base"

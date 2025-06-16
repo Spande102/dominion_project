@@ -6,7 +6,7 @@ def curse_vp(player = none):
 Curse = Card(
     "Curse",
     cost = 0,
-    card_type = "Curse",
+    card_type = ['Curse'],
     description = "-1 VP",
     effect = None,
     expansion = "base"

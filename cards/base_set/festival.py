@@ -8,7 +8,7 @@ def festival_effect(player, game):
 Festival = Card(
     "Festival",
     cost = 5,
-    card_type = "Action",
+    card_type = ['Action'],
     description = "+2 Actions, +1 Buy, +2 Coins",
     effect = festival_effect,
     expansion = "base"

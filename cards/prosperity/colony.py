@@ -6,7 +6,7 @@ def colony_vp(player = none):
 Colony = Card(
     "Colony",
     cost = 11,
-    card_type = "Victory",
+    card_type = ['Victory'],
     description = "+10 VP",
     effect = None,
     expansion = "prosperity"

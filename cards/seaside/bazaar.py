@@ -8,7 +8,7 @@ def bazaar_effect(player, game):
 Bazaar = Card(
     "Bazaar",
     cost=5,
-    card_type="Action",
+    card_type = ['Action'],
     description="+1 Card, +2 Actions, +1 Coin",
     effect=bazaar_effect,
     expansion = "seaside"

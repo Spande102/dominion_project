@@ -7,7 +7,7 @@ def village_effect(player, game):
 Village = Card(
     "Village",
     cost = 3,
-    card_type = "Action",
+    card_type = ['Action'],
     description = "+1 Card, +2 Actions",
     effect = village_effect,
     expansion = "base"

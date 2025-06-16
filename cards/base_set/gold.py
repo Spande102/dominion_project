@@ -6,7 +6,7 @@ def gold_effect(player, game):
 Gold = Card(
     "Gold",
     cost=6,
-    card_type="Treasure",
+    card_type = ['Treasure'],
     description="+3 Coins",
     effect=gold_effect,
     expansion = "base"

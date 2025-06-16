@@ -49,12 +49,14 @@ class Game:
             scores[player.name] = vp
             max_score = max(max_score, vp)
             print(f"{player.name}: {vp} points")
+            print(
+                f"  Cards: {[card.name for card in player.deck + player.hand + player.discard_pile + player.in_play]}")
 
         winners = [name for name, score in scores.items() if score == max_score]
         if len(winners) == 1:
-            print(f"\n {winners[0]} wins!")
+            print(f"\n{winners[0]} wins!")
         else:
-            print(f"\n It's a tie between: {', '.join(winners)}")
+            print(f"\nIt's a tie between: {', '.join(winners)}")
 
     def handle_command(self, player, command):
         tokens = command.strip().split()
@@ -90,12 +92,11 @@ class Game:
         elif cmd in ("Disp", "Display"):
             if args:
                 card_name = " ".join(args)
-                card = self.supply.get(card_name) or next(
-                    (c for c in player.hand if c.name.lower() == card_name.lower()), None)
-                if card:
-                    print(f"{card.name} - Cost: {card.cost} - {card.description}")
+                card = None
+                if card_name in self.supply and self.supply[card_name]:
+                    card = self.supply[card_name][0]  # Get one copy from supply
                 else:
-                    print("Card not found in supply or hand.")
+                    card = next((c for c in player.hand if c.name.lower() == card_name.lower()), None)
             else:
                 print("Usage: disp [card name]")
             return True

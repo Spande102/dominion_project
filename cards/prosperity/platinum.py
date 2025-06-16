@@ -6,7 +6,7 @@ def plat_effect(player, game):
 Platinum = Card(
     "Platinum",
     cost=9,
-    card_type="Treasure",
+    card_type = ['Treasure'],
     description="+5 Coins",
     effect=plat_effect,
     expansion = "prosperity"

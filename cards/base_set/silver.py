@@ -6,7 +6,7 @@ def silver_effect(player, game):
 Silver = Card(
     "Silver",
     cost = 3,
-    card_type = "Treasure",
+    card_type = ['Treasure'],
     description = "+2 Coins",
     effect = silver_effect,
     expansion = "base"

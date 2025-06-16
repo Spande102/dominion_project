@@ -6,7 +6,7 @@ def copper_effect(player, game):
 Copper = Card(
     "Copper",
     cost=0,
-    card_type="Treasure",
+    card_type = ['Treasure'],
     description="+1 Coin",
     effect=copper_effect,
     expansion = "base"

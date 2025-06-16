@@ -1,5 +1,3 @@
-# player.py
-
 import random
 
 class Player:
@@ -14,8 +12,6 @@ class Player:
         self.buys = 1
         self.coins = 0
 
-
-
     def draw_cards(self, num):
         for _ in range(num):
             if not self.deck:
@@ -29,7 +25,6 @@ class Player:
         self.buys = 1
         self.coins = 0
 
-
     def take_turn(self, game):
         self.start_turn()
         print(f"\n-- {self.name}'s Turn --")
@@ -37,28 +32,33 @@ class Player:
 
         # --- Action Phase ---
         print("\n-- Action Phase --")
-        while self.actions > 0 and any(card for card in self.hand if "Action" in card.card_type for card in self.hand):
-            action_cards = [card for card in self.hand if card for card in self.hand if "Action" in card.card_type]
+        while self.actions > 0 and any("Action" in card.card_type for card in self.hand):
+            action_cards = [card for card in self.hand if "Action" in card.card_type]
             print(f"Actions: {self.actions}")
             print("Action Cards:")
             for i, card in enumerate(action_cards):
                 print(f"{i+1}. {card.name} - {card.description}")
-            choice =input("Play an action Card or Type a command \n (press Enter or type skip to skip): ").capitalize()
+            choice = input("Play an action Card or Type a command \n (press Enter or type skip to skip): ").capitalize()
             if game.handle_command(self, choice):
-                if not game.running:  # Ended via resign
+                if not game.running:
                     return
                 continue
-            if choice.strip() == "" or choice.strip() =="Skip":
+            if choice.strip() == "" or choice.strip() == "Skip":
                 break
-            chosen_card = action_cards[int(choice)-1]
+            try:
+                chosen_card = action_cards[int(choice) - 1]
+            except (ValueError, IndexError):
+                print("Invalid selection.")
+                continue
             self.play_card(chosen_card, game)
             self.actions -= 1
 
         # --- Buy Phase ---
         print("\n-- Buy Phase --")
-        treasure_cards = [card for card in self.hand if card.card_type == "Treasure"]
+        treasure_cards = [card for card in self.hand if "Treasure" in card.card_type]
         for card in treasure_cards:
-            self.coins += card.effect(self, game)
+            if card.effect:
+                self.coins += card.effect(self, game)
             self.in_play.append(card)
         print(f"Coins: {self.coins}")
 
@@ -66,7 +66,7 @@ class Player:
         while self.buys > 0:
             buy = input(f"Buy a card (coins={self.coins}) \n  Press Enter or type skip to skip: ").strip().capitalize()
             if game.handle_command(self, buy):
-                if not game.running:  # Ended via resign
+                if not game.running:
                     return
                 continue
             if buy == "" or buy == "Skip":
@@ -90,8 +90,12 @@ class Player:
             card.effect(self, game)
 
     def cleanup(self):
-        print(f"{self.name}\'s turn has ended.")
+        print(f"{self.name}'s turn has ended.")
         self.discard_pile += self.hand + self.in_play
         self.hand = []
         self.in_play = []
         self.draw_cards(5)
+
+    def get_victory_points(self):
+        all_cards = self.deck + self.hand + self.discard_pile + self.in_play
+        return sum(card.get_victory_points(self) if hasattr(card, "get_victory_points") else 0 for card in all_cards)

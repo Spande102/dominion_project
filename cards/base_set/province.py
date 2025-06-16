@@ -6,7 +6,7 @@ def province_vp(player = none):
 Province = Card(
     "Province",
     cost = 8,
-    card_type = "Victory",
+    card_type = ['Victory'],
     description = "+6 VP",
     effect = None,
     expansion = "base"

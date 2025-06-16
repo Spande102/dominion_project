@@ -24,7 +24,7 @@ def militia_effect(player, game):
 Militia = Card(
     "Militia",
     cost = 4,
-    card_type = "Action",
+    card_type = ['Action'],
     description = "+2 Coins. Each other player discards down to 3 cards.",
     effect = militia_effect,
     expansion = "base"

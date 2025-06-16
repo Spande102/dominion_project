@@ -7,7 +7,7 @@ def woodcutter_effect(player, game):
 Woodcutter = Card(
     "Woodcutter",
     cost=3,
-    card_type="Action",
+    card_type = ['Action'],
     description="+1 Buy, +2 Coins",
     effect=woodcutter_effect,
     expansion = "base"
