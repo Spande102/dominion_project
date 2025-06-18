@@ -17,7 +17,7 @@ def witch_effect(player, game):
 Witch = Card(
     name = "Witch",
     cost = 5,
-    card_type = ['Action'],
+    card_type = ['Action', 'Attack'],
     description = "+2 Cards; each other player gains a Curse.",
     effect = witch_effect,
     expansion = "base"

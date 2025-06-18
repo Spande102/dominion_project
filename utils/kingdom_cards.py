@@ -1,4 +1,6 @@
 import random
+import copy
+from utils.supply_build import add_standard_cards
 
 def choose_kingdom_cards(cards_by_expansion):
     print("\nChoose kingdom setup method:")
@@ -13,7 +15,6 @@ def choose_kingdom_cards(cards_by_expansion):
             return manually_choose_kingdom_cards(cards_by_expansion)
         else:
             print("Invalid input. Please enter 1 or 2.")
-
 
 def randomize_kingdom_cards(cards_by_expansion):
     print("\nAvailable expansions:")
@@ -32,36 +33,35 @@ def randomize_kingdom_cards(cards_by_expansion):
     else:
         chosen_expansions = expansions
 
-    # Build a pool of Action-type cards
+    # Include any card that's not a base card and intended for Kingdom use
     pool = [
         card for exp in chosen_expansions
         for card in cards_by_expansion[exp]
-        if "Action" in [t.capitalize() for t in card.card_type]
+        if is_kingdom_card(card)
     ]
 
     if len(pool) < 10:
-        print("Not enough Action cards available for random selection.")
+        print("Not enough eligible cards available for random selection.")
         return []
 
     return random.sample(pool, 10)
 
-
 def manually_choose_kingdom_cards(cards_by_expansion):
-    print("\nAvailable Action cards:")
-    all_action_cards = {}
+    print("\nAvailable Kingdom cards:")
+    all_kingdom_cards = {}
 
     for expansion, cards in cards_by_expansion.items():
         print(f"\n[{expansion}]")
         for card in cards:
-            if "Action" in [t.capitalize() for t in card.card_type]:
-                print(f" - {card.name}")
-                all_action_cards[card.name.lower()] = card
+            if is_kingdom_card(card):
+                print(f" - {card.name} ({', '.join(card.card_type)})")
+                all_kingdom_cards[card.name.lower()] = card
 
     selected_cards = []
     while len(selected_cards) < 10:
         name = input(f"\nEnter card name ({len(selected_cards) + 1}/10): ").strip().lower()
-        if name in all_action_cards:
-            card = all_action_cards[name]
+        if name in all_kingdom_cards:
+            card = all_kingdom_cards[name]
             if card in selected_cards:
                 print("You've already selected that card.")
             else:
@@ -70,3 +70,8 @@ def manually_choose_kingdom_cards(cards_by_expansion):
             print("Card not found. Please enter the exact name shown above.")
 
     return selected_cards
+
+# Helper: define what counts as a base Kingdom card
+def is_kingdom_card(card):
+    base_cards = {"Copper", "Silver", "Gold", "Estate", "Duchy", "Province", "Curse", "Platinum", "Colony"}
+    return card.name not in base_cards

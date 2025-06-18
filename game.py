@@ -30,6 +30,7 @@ class Game:
 
         if self.ended_by_resignation:
             print(f"{self.resigned_player.name} resigned. Game has concluded.")
+            self.tally_scores()
         else:
             print("Game over! Tallying scores...")
             self.tally_scores()

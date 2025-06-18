@@ -31,7 +31,8 @@ def main():
     supply = {card.name: [card for _ in range(10)] for card in selected_kingdom_cards}
 
     # Add base cards like Copper, Silver, Gold, Estates, Duchies, Provinces, Curses
-    add_standard_cards(supply, num_players)
+
+    add_standard_cards(supply, num_players, include_colony= True)
 
     print("\nFinal Supply:")
     for name in supply:

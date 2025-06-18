@@ -1,4 +1,4 @@
-def add_standard_cards(supply, num_players=2):
+def add_standard_cards(supply, num_players=2, include_colony=False):
     from cards.base_set.copper import Copper
     from cards.base_set.silver import Silver
     from cards.base_set.gold import Gold
@@ -7,17 +7,28 @@ def add_standard_cards(supply, num_players=2):
     from cards.base_set.province import Province
     from cards.base_set.curse import Curse
 
-    # Treasure cards
+    if include_colony:
+        from cards.prosperity.platinum import Platinum
+        from cards.prosperity.colony import Colony
+
+    # Treasures
     supply["Copper"] = [Copper for _ in range(60)]
     supply["Silver"] = [Silver for _ in range(40)]
-    supply["Gold"]   = [Gold   for _ in range(30)]
+    supply["Gold"]   = [Gold for _ in range(30)]
 
-    # Victory cards (8 each for 2 players, 12 for 3-4)
+
+
+    # Victory cards
     victory_count = 8 if num_players == 2 else 12
     supply["Estate"]   = [Estate for _ in range(victory_count)]
     supply["Duchy"]    = [Duchy for _ in range(victory_count)]
     supply["Province"] = [Province for _ in range(victory_count)]
 
-    # Curse cards: 10 per opponent
+
+    if include_colony:
+        supply["Platinum"] = [Platinum for _ in range(12)]
+        supply["Colony"] = [Colony for _ in range(victory_count)]
+
+    # Curses
     curse_count = (num_players - 1) * 10
     supply["Curse"] = [Curse for _ in range(curse_count)]
