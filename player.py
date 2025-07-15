@@ -13,6 +13,8 @@ class Player:
         self.coins = 0
 
     def draw_cards(self, num):
+        #just shuffle the array gng to make a random hand....
+        random.shuffle(self.deck)
         for _ in range(num):
             if not self.deck:
                 self.deck = random.sample(self.discard_pile, len(self.discard_pile))
