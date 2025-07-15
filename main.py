@@ -39,6 +39,7 @@ def main():
         print(f"- {name} ({len(supply[name])} copies)")
 
     # Start the game
+
     game = Game(players, supply)
     game.run()
 
