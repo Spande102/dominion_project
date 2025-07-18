@@ -62,6 +62,7 @@ class Player:
             if card.effect:
                 self.coins += card.effect(self, game)
             self.in_play.append(card)
+            self.hand.remove(card)
         print(f"Coins: {self.coins}")
 
         game.display_supply()
