@@ -21,6 +21,24 @@ class Game:
             if pile:
                 print(f"{name} (Cost {pile[0].cost}): {len(pile)} left")
 
+    def topdeck_gained_card(self, player, card_name):
+        """
+        Moves a specified card from the supply to the top of the given player's deck.
+
+        :param player: The player gaining the card.
+        :param card_name: The name of the card to be gained.
+        :return: The card object gained, or None if the gain is unsuccessful.
+        """
+        if card_name in self.supply and self.supply[card_name]:  # Check if the card is in supply and available
+            card = self.supply[card_name].pop()  # Remove the card from the supply
+            player.deck.insert(0, card)  # Place it on top of the player's deck
+            print(f"{player.name} gains a {card_name} to the top of their deck.")
+            return card
+        else:
+            print(f"{card_name} is not available in the supply.")
+            return None
+
+
     def run(self):
         turn = 0
         while not self.is_game_over() and self.running:
