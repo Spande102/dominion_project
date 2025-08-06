@@ -1,1 +1,7 @@
-Text-Based dominion game which aims for complete functionality between 2-4 players.
+Text-Based dominion game aimed for singleplayer or multiplayer use.
+
+- Included options for manual/random kingdom selection.
+- Base Dominion set included (1e & 2e)
+- Platinum/Colony support from Dominion Prosperity
+- Game scales kingdom piles based on amount of players.
+
