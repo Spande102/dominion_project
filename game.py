@@ -96,6 +96,10 @@ class Game:
             print(f"{player.name}'s hand: {[card.name for card in player.hand]}")
             return True
 
+        elif cmd == "Supply":
+            game.display_supply()
+            return True
+
         elif cmd == "Actions":
             print(f"{player.name} has {player.actions} action(s) remaining.")
             return True

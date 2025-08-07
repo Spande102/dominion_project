@@ -12,15 +12,21 @@ class Player:
         self.buys = 1
         self.coins = 0
 
-    def draw_cards(self, num):
-        #just shuffle the array gng to make a random hand....
-        random.shuffle(self.deck)
-        for _ in range(num):
+    def draw_cards(self, n=1, return_card=False):
+        drawn_cards = []
+        for _ in range(n):
             if not self.deck:
-                self.deck = random.sample(self.discard_pile, len(self.discard_pile))
+                self.deck = self.discard_pile
                 self.discard_pile = []
+                random.shuffle(self.deck)
             if self.deck:
-                self.hand.append(self.deck.pop())
+                card = self.deck.pop()
+                if return_card:
+                    drawn_cards.append(card)
+                else:
+                    self.hand.append(card)
+        if return_card:
+            return drawn_cards[0] if n == 1 else drawn_cards
 
     def start_turn(self):
         self.actions = 1

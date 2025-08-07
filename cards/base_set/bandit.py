@@ -22,7 +22,7 @@ def bandit_effect(player, game):
         # Find non-Copper Treasures
         treasures = [card for card in revealed if "Treasure" in card.card_type and card.name != "Copper"]
         if treasures:
-            # Trash one (usually the most expensive one)
+            # Trash one - highest cost(shouldnt do this but i didnt code the player's choice)
             to_trash = sorted(treasures, key=lambda c: c.cost, reverse=True)[0]
             revealed.remove(to_trash)
             game.trash_pile.append(to_trash)
