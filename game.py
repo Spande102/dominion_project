@@ -2,6 +2,7 @@ class Game:
     def __init__(self, players, supply):
         self.players = players
         self.supply = supply
+        self.trash_pile = []
         self.running = True
         self.ended_by_resignation = False
         self.resigned_player = None  # optional, used only on resignation
@@ -37,6 +38,23 @@ class Game:
         else:
             print(f"{card_name} is not available in the supply.")
             return None
+
+    def trash_card(self, card_name, game, zone='hand'):
+        """
+        Trashes a card from the specified zone ('hand', 'in_play', 'discard', 'deck')
+        and moves it to the game trash pile.
+        """
+        zone_list = getattr(self, zone, [])
+        card = next((c for c in zone_list if c.name.lower() == card_name.lower()), None)
+
+        if not card:
+            print(f"{card_name} not found in your {zone}.")
+            return None
+
+        zone_list.remove(card)
+        game.trash_pile.append(card)
+        print(f"{self.name} trashes {card.name} from {zone}.")
+        return card
 
 
     def run(self):

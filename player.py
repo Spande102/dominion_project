@@ -98,13 +98,40 @@ class Player:
         if card.effect:
             card.effect(self, game)
 
-    def cleanup(self):
-        print(f"{self.name}'s turn has ended.")
-        self.discard_pile += self.hand + self.in_play
-        self.hand = []
-        self.in_play = []
-        self.draw_cards(5)
+    def choose_card_from(cards, prompt):
+        if not cards:
+            print("No cards available to choose from.")
+            return None
 
-    def get_victory_points(self):
-        all_cards = self.deck + self.hand + self.discard_pile + self.in_play
-        return sum(card.get_victory_points(self) if hasattr(card, "get_victory_points") else 0 for card in all_cards)
+        print("\n" + prompt)
+        for i, card in enumerate(cards):
+            print(f"{i + 1}: {card.name} - {card.description}")
+
+        while True:
+            choice = input(f"Choose a card (1-{len(cards)}) or type 0 to cancel: ").strip()
+            if choice == "0":
+                print("Action canceled.")
+                return None  # Player chose to cancel
+
+            try:
+                index = int(choice) - 1
+                if 0 <= index < len(cards):
+                    chosen_card = cards[index]
+                    print(f"You selected: {chosen_card.name}")
+                    return chosen_card
+                else:
+                    print("Invalid choice. Please choose a valid card.")
+            except ValueError:
+                print("Invalid input. Please enter a number.")
+
+
+def cleanup(self):
+    print(f"{self.name}'s turn has ended.")
+    self.discard_pile += self.hand + self.in_play
+    self.hand = []
+    self.in_play = []
+    self.draw_cards(5)
+
+def get_victory_points(self):
+    all_cards = self.deck + self.hand + self.discard_pile + self.in_play
+    return sum(card.get_victory_points(self) if hasattr(card, "get_victory_points") else 0 for card in all_cards)

@@ -9,7 +9,7 @@ def feast_effect(player, game):
         gained = gainable[choice].pop()
         player.discard_pile.append(gained)
         print(f"{player.name} gains {gained.name}.")
-    player.trash_card("Feast")
+    player.trash_card("Feast", game, zone="in_play")
 
 Feast = Card(
     "Feast",
