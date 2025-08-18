@@ -11,6 +11,7 @@ class Player:
         self.actions = 1
         self.buys = 1
         self.coins = 0
+        self.victory_tokens = 0
 
     def draw_cards(self, n=1, return_card=False):
         drawn_cards = []
@@ -134,4 +135,7 @@ def cleanup(self):
 
 def get_victory_points(self):
     all_cards = self.deck + self.hand + self.discard_pile + self.in_play
-    return sum(card.get_victory_points(self) if hasattr(card, "get_victory_points") else 0 for card in all_cards)
+    return (
+        sum(card.get_victory_points(self) if hasattr(card, "get_victory_points") else 0 for card in all_cards)
+        + self.victory_tokens
+    )
