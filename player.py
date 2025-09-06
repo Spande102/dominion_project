@@ -64,12 +64,31 @@ class Player:
 
         # --- Buy Phase ---
         print("\n-- Buy Phase --")
-        treasure_cards = [card for card in self.hand if "Treasure" in card.card_type]
-        for card in treasure_cards:
-            if card.effect:
-                self.coins += card.effect(self, game)
-            self.in_play.append(card)
-            self.hand.remove(card)
+        while True:
+            treasure_cards = [card for card in self.hand if "Treasure" in card.card_type]
+            if not treasure_cards:
+                print("No treasure cards left to play.")
+                break
+            print("Treasure Cards in hand:")
+            for i, card in enumerate(treasure_cards):
+                print(f"{i+1}. {card.name} - {card.description}")
+            choice = input("Play a treasure card (enter number), or press Enter/skip to stop: ").strip()
+            if choice == "" or choice.lower() == "skip":
+                break
+            try:
+                idx = int(choice) - 1
+                if 0 <= idx < len(treasure_cards):
+                    card = treasure_cards[idx]
+                    if card.effect:
+                        self.coins += card.effect(self, game)
+                    self.in_play.append(card)
+                    self.hand.remove(card)
+                    print(f"Played {card.name}. Coins: {self.coins}")
+                else:
+                    print("Invalid selection.")
+            except ValueError:
+                print("Invalid input.")
+
         print(f"Coins: {self.coins}")
 
         game.display_supply()
