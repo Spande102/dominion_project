@@ -1,4 +1,4 @@
-Text-Based dominion game aimed for singleplayer or multiplayer use.
+Text-Based dominion game aimed for singleplayer use.
 
 - Included options for manual/random kingdom selection.
 - Base Dominion set included (1e & 2e)
