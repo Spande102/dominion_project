@@ -210,3 +210,4 @@ utils/__pycache__/supply_build.cpython-310.pyc
 /__pycache__
 *.pyc
 cards/intrigue/__pycache__/duke.cpython-310.pyc
+/.idea
