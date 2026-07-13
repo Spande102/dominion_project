@@ -2,28 +2,29 @@ from card import Card
 
 def bandit_effect(player, game):
     # Gain a Gold
-    if "Gold" in game.supply and game.supply["Gold"]:
-        gold = game.supply["Gold"].pop()
-        player.discard_pile.append(gold)
+    gold = player.gain_card(game, game.find_supply_pile("Gold"))
+    if gold:
         print(f"{player.name} gains a Gold.")
     else:
         print("No Golds left to gain.")
 
     # Attack other players
-    for other_player in game.players:
-        if other_player == player:
-            continue
-
+    for other_player in game.attack_targets(player):
         # Reveal top 2 cards
-        revealed = [other_player.draw_card() for _ in range(2)]
-        revealed = [card for card in revealed if card is not None]
+        revealed = other_player.draw_cards(2, return_card=True)
+        if not revealed:
+            print(f"{other_player.name} has no cards to reveal.")
+            continue
         print(f"{other_player.name} reveals: {[card.name for card in revealed]}")
 
-        # Find non-Copper Treasures
+        # Find non-Copper Treasures; the attacked player chooses which one to trash
         treasures = [card for card in revealed if "Treasure" in card.card_type and card.name != "Copper"]
         if treasures:
-            # Trash one - highest cost(shouldnt do this but i didnt code the player's choice)
-            to_trash = sorted(treasures, key=lambda c: c.cost, reverse=True)[0]
+            if len(treasures) > 1:
+                to_trash = other_player.choose_card_from(
+                    treasures, f"{other_player.name}, choose a Treasure to trash:", optional=False)
+            else:
+                to_trash = treasures[0]
             revealed.remove(to_trash)
             game.trash_pile.append(to_trash)
             print(f"{other_player.name} trashes {to_trash.name}.")

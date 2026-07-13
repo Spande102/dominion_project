@@ -3,12 +3,14 @@ from card import Card
 
 def feast_effect(player, game):
     max_cost = 5
-    gainable = {name: pile for name, pile in game.supply.items() if pile and pile[0].cost <= max_cost}
-    choice = input(f"Gain card (≤ 5): ").strip()
-    if choice in gainable:
-        gained = gainable[choice].pop()
-        player.discard_pile.append(gained)
+    pile_name = player.choose_supply_pile(
+        game, f"Gain a card costing up to {max_cost}:",
+        predicate=lambda c: c.cost <= max_cost, optional=False)
+    gained = player.gain_card(game, pile_name)
+    if gained:
         print(f"{player.name} gains {gained.name}.")
+    else:
+        print("No cards available to gain.")
     player.trash_card("Feast", game, zone="in_play")
 
 Feast = Card(

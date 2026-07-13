@@ -8,7 +8,7 @@ def monument_effect(player, game):
 Monument = Card(
     "Monument",
     cost=5,
-    card_type = ['Action','Attack'],
+    card_type = ['Action'],
     description="+2 Coins, +1 Victory Token",
     effect=monument_effect,
     expansion = "prosperity"

@@ -6,41 +6,27 @@ def mine_effect(player, game):
         print("No Treasures in hand to trash.")
         return
 
-    print(f"Your Treasures: {[card.name for card in treasures_in_hand]}")
-    trash_choice = input("Choose a Treasure to trash: ").strip()
-    to_trash = next((c for c in treasures_in_hand if c.name.lower() == trash_choice.lower()), None)
-
+    to_trash = player.choose_card_from(treasures_in_hand, "You may trash a Treasure from your hand:")
     if not to_trash:
-        print("Invalid choice.")
         return
 
     player.hand.remove(to_trash)
     game.trash_pile.append(to_trash)
     max_cost = to_trash.cost + 3
 
-    # Gainable Treasures from supply
-    gainable = {name: pile for name, pile in game.supply.items()
-                if pile and "Treasure" in pile[0].card_type and pile[0].cost <= max_cost}
-
-    if not gainable:
-        print("No available Treasure to gain.")
-        return
-
-    print(f"Available to gain (Treasure, cost ≤ {max_cost}): {', '.join(gainable.keys())}")
-    gain_choice = input("Gain which Treasure? ").strip()
-
-    if gain_choice in gainable and gainable[gain_choice]:
-        gained = gainable[gain_choice].pop()
-        player.hand.append(gained)
+    pile_name = player.choose_supply_pile(
+        game, f"Gain a Treasure to your hand costing up to {max_cost}:",
+        predicate=lambda c: "Treasure" in c.card_type and c.cost <= max_cost,
+        optional=False)
+    gained = player.gain_card(game, pile_name, destination='hand')
+    if gained:
         print(f"{player.name} trashes {to_trash.name} and gains {gained.name} to hand.")
-    else:
-        print("Invalid gain choice.")
 
 Mine = Card(
     "Mine",
     cost=5,
     card_type=["Action"],
-    description="Trash a Treasure from your hand. Gain a Treasure to your hand costing up to +3 more.",
+    description="You may trash a Treasure from your hand. Gain a Treasure to your hand costing up to 3 more.",
     effect=mine_effect,
     expansion="base"
 )

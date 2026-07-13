@@ -5,14 +5,12 @@ def witch_effect(player, game):
     player.draw_cards(2)
 
     # Each other player gains a Curse (if available)
-    for other in game.players:
-        if other is not player:
-            if "Curse" in game.supply and game.supply["Curse"]:
-                curse_card = game.supply["Curse"].pop()
-                other.discard_pile.append(curse_card)
-                print(f"{other.name} gains a Curse.")
-            else:
-                print("No Curse cards left in supply.")
+    for other in game.attack_targets(player):
+        curse_card = other.gain_card(game, game.find_supply_pile("Curse"))
+        if curse_card:
+            print(f"{other.name} gains a Curse.")
+        else:
+            print("No Curse cards left in supply.")
 
 Witch = Card(
     name = "Witch",

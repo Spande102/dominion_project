@@ -1,7 +1,7 @@
 from card import Card
 
 def plat_effect(player, game):
-    return 5  # +3 coin
+    return 5  # +5 coin
 
 Platinum = Card(
     "Platinum",

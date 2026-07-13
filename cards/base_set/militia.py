@@ -5,21 +5,19 @@ def militia_effect(player, game):
     player.coins += 2
     print(f"{player.name} gets +2 Coins.")
 
-    for other in game.players:
-        if other is not player:
-            if len(other.hand) > 3:
-                print(f"\n{other.name}'s hand: {[c.name for c in other.hand]}")
-                while len(other.hand) > 3:
-                    discard = input(f"{other.name}, choose a card to discard: ").strip()
-                    card = next((c for c in other.hand if c.name.lower() == discard.lower()), None)
-                    if card:
-                        other.hand.remove(card)
-                        other.discard_pile.append(card)
-                        print(f"{other.name} discards {card.name}.")
-                    else:
-                        print("Invalid choice.")
-            else:
-                print(f"{other.name} has 3 or fewer cards, no discard needed.")
+    for other in game.attack_targets(player):
+        if len(other.hand) > 3:
+            excess = len(other.hand) - 3
+            print(f"\n{other.name}'s hand: {[c.name for c in other.hand]}")
+            to_discard = other.choose_cards_from(
+                other.hand, f"{other.name}, discard down to 3 cards:",
+                min_count=excess, max_count=excess)
+            for card in to_discard:
+                other.hand.remove(card)
+                other.discard_pile.append(card)
+                print(f"{other.name} discards {card.name}.")
+        else:
+            print(f"{other.name} has 3 or fewer cards, no discard needed.")
 
 Militia = Card(
     "Militia",

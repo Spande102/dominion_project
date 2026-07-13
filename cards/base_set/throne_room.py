@@ -6,11 +6,15 @@ def throne_room_effect(player, game):
     if not action_cards:
         print("No Action cards to Throne Room.")
         return
-    chosen = player.choose_card_from(action_cards, "Choose Action to play twice:")
+    chosen = player.choose_card_from(action_cards, "Choose an Action to play twice (0 to skip):")
+    if chosen is None:
+        return
     player.hand.remove(chosen)
+    player.in_play.append(chosen)
     print(f"{player.name} plays {chosen.name} twice.")
-    chosen.effect(player, game)
-    chosen.effect(player, game)
+    if chosen.effect:
+        chosen.effect(player, game)
+        chosen.effect(player, game)
 
 Throne_room = Card(
     "Throne Room",

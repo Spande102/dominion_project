@@ -5,7 +5,7 @@ def adventurer_effect(player, game):
     treasures = 0
     revealed = []
     while treasures < 2:
-        card = player.draw(1, return_card=True)
+        card = player.draw_cards(1, return_card=True)
         if not card:
             break
         if "Treasure" in card.card_type:

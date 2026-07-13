@@ -7,16 +7,17 @@ def vassal_effect(player, game):
         print(f"Discarded {top.name}.")
         player.discard_pile.append(top)
         if "Action" in top.card_type:
-            play_it = input(f"Play {top.name}? (y/n): ").strip().lower() == 'y'
-            if play_it:
+            if player.confirm(f"Play {top.name}?"):
                 player.discard_pile.remove(top)
-                top.effect(player, game)
+                player.in_play.append(top)
+                if top.effect:
+                    top.effect(player, game)
 
 Vassal = Card(
     "Vassal",
     cost=4,
     card_type=["Action"],
-    description="You may play an Action card from your hand twice.",
+    description="+2 Coins. Discard the top card of your deck. If it's an Action card, you may play it.",
     effect=vassal_effect,
     expansion="base",
 )

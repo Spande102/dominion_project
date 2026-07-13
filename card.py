@@ -1,4 +1,10 @@
 class Card:
+    """
+    Cards are stateless singletons: each card file creates ONE Card instance,
+    and supply piles / player decks hold repeated references to it. All
+    per-player and per-turn state therefore lives on Player/TurnState, never
+    on the card. Revisit (instantiate copies) when adding Duration cards.
+    """
     def __init__(self, name, cost, card_type, description, effect=None, expansion = "base"):
         self.name = name
         self.cost = cost

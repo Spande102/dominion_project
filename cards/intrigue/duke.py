@@ -1,9 +1,8 @@
 from card import Card
 
 def duke_vp(player):
-    duchy_count = sum(1 for card in (player.deck + player.hand + player.discard_pile)
-                      if card.name == "Duchy")
-    return duchy_count
+    all_cards = player.deck + player.hand + player.discard_pile + player.in_play
+    return sum(1 for card in all_cards if card.name == "Duchy")
 
 Duke = Card(
     "Duke",

@@ -3,8 +3,7 @@ from card import Card
 def chancellor_effect(player, game):
     player.coins += 2
 
-    discard = input("Discard your entire deck? (y/n): ").strip().lower() == 'y'
-    if discard:
+    if player.confirm("Discard your entire deck?"):
         player.discard_pile.extend(player.deck)
         player.deck.clear()
         print(f"{player.name} discards their deck.")

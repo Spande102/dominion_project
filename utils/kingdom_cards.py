@@ -1,6 +1,4 @@
 import random
-import copy
-from utils.supply_build import add_standard_cards
 
 def choose_kingdom_cards(cards_by_expansion):
     print("\nChoose kingdom setup method:")
@@ -33,18 +31,22 @@ def randomize_kingdom_cards(cards_by_expansion):
     else:
         chosen_expansions = expansions
 
-    # Include any card that's not a base card and intended for Kingdom use
+    kingdom = random_kingdom(cards_by_expansion, chosen_expansions)
+    if not kingdom:
+        print("Not enough eligible cards available for random selection.")
+    return kingdom
+
+
+def random_kingdom(cards_by_expansion, expansions=None, count=10):
+    """Pick a random kingdom without prompting (used by automated matches)."""
     pool = [
-        card for exp in chosen_expansions
+        card for exp in (expansions or cards_by_expansion)
         for card in cards_by_expansion[exp]
         if is_kingdom_card(card)
     ]
-
-    if len(pool) < 10:
-        print("Not enough eligible cards available for random selection.")
+    if len(pool) < count:
         return []
-
-    return random.sample(pool, 10)
+    return random.sample(pool, count)
 
 def manually_choose_kingdom_cards(cards_by_expansion):
     print("\nAvailable Kingdom cards:")

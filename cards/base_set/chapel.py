@@ -1,29 +1,12 @@
 from card import Card
 
 def chapel_effect(player, game):
-    # Show hand
-    print(f"\nYour hand: {[card.name for card in player.hand]}")
-
-    cards_trashed = 0
-    while cards_trashed < 4 and player.hand:
-        choice = input(f"Choose a card to trash (or press Enter to finish): ").strip()
-
-        if not choice:  # Player finishes trashing
-            break
-
-        # Find the chosen card
-        card_to_trash = next((c for c in player.hand if c.name.lower() == choice.lower()), None)
-        if not card_to_trash:
-            print("Invalid card. Please choose a valid card from your hand.")
-            continue
-
-        # Remove a card from hand and increment counter
-        player.hand.remove(card_to_trash)
-        cards_trashed += 1
-        print(f"{player.name} trashes {card_to_trash.name}.")
-        print(f"\nYour hand: {[card.name for card in player.hand]}")
-
-    print(f"{player.name} has trashed {cards_trashed} card(s).")
+    to_trash = player.choose_cards_from(player.hand, "Choose up to 4 cards to trash:", min_count=0, max_count=4)
+    for card in to_trash:
+        player.hand.remove(card)
+        game.trash_pile.append(card)
+        print(f"{player.name} trashes {card.name}.")
+    print(f"{player.name} has trashed {len(to_trash)} card(s).")
 
 Chapel = Card(
     "Chapel",
