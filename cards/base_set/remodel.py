@@ -11,10 +11,10 @@ def remodel_effect(player, game):
     game.trash_pile.append(card_to_trash)
     print(f"{player.name} trashes {card_to_trash.name}.")
 
-    max_cost = card_to_trash.cost + 2
+    max_cost = game.card_cost(card_to_trash) + 2
     pile_name = player.choose_supply_pile(
         game, f"Gain a card costing up to {max_cost}:",
-        predicate=lambda c: c.cost <= max_cost, optional=False)
+        predicate=lambda c: game.card_cost(c) <= max_cost, optional=False)
     gained_card = player.gain_card(game, pile_name)
     if gained_card:
         print(f"{player.name} gains {gained_card.name}.")

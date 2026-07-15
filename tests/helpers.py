@@ -2,7 +2,7 @@
 from bots import BigMoneyBot as BigMoneyPlayer  # noqa: F401 (re-export for tests)
 from game import Game
 from player import Player
-from utils.supply_build import add_standard_cards
+from utils.supply_build import build_kingdom_supply
 
 
 class ScriptedPlayer(Player):
@@ -54,6 +54,12 @@ class ScriptedPlayer(Player):
     def confirm(self, prompt):
         return bool(self._pop(False))
 
+    def choose_options(self, options, prompt, count=1):
+        chosen = self._pop(None)
+        if chosen is None:
+            return list(options[:count])
+        return [next(o for o in options if o.lower() == c.lower()) for c in chosen]
+
     def choose_supply_pile(self, game, prompt, predicate=None, optional=True):
         name = self._pop()
         if name is not None:
@@ -94,6 +100,4 @@ class ScriptedPlayer(Player):
 
 def make_game(players, kingdom=(), num_players=2):
     """Build a Game with the given kingdom card piles plus the standard cards."""
-    supply = {card.name: [card] * 10 for card in kingdom}
-    add_standard_cards(supply, num_players=num_players)
-    return Game(list(players), supply)
+    return Game(list(players), build_kingdom_supply(kingdom, num_players=num_players))

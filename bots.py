@@ -90,8 +90,8 @@ class Bot(Player):
 
     def confirm(self, prompt):
         p = prompt.lower()
-        if "block the attack" in p:
-            return True                          # always reveal Moat
+        if "in response to the attack" in p:
+            return True                          # always reveal Reactions
         if "revealed card" in p:
             return self.name.lower() not in p    # Spy: keep own card, flip others'
         if "keep it in hand" in p:
@@ -119,6 +119,10 @@ class Bot(Player):
 
     def order_cards(self, cards, prompt):
         return list(cards)
+
+    def choose_options(self, options, prompt, count=1):
+        # Card effects list their generally-best options first
+        return list(options[:count])
 
     # -- turn flow ----------------------------------------------------
 
@@ -231,7 +235,8 @@ class EngineBot(BigMoneyBot):
         draw_owned = sum(1 for c in owned if "Action" in c.card_type and cards_gain(c) >= 2)
 
         affordable = [pile[0] for name, pile in game.supply.items()
-                      if pile and "Action" in pile[0].card_type and pile[0].cost <= coins]
+                      if pile and "Action" in pile[0].card_type
+                      and pile[0].cost <= coins and pile[0].potion_cost == 0]
 
         # One early trasher (never with a hand that could buy something big)
         if (self.turns_taken <= 4 and 2 <= coins <= 4

@@ -1,3 +1,22 @@
+def victory_pile_count(num_players):
+    return 8 if num_players == 2 else 12
+
+
+def build_kingdom_supply(kingdom_cards, num_players=2, include_colony=False):
+    """Build a full supply from 10 kingdom cards plus the standard cards.
+    Kingdom Victory piles use the victory count (8/12) instead of 10.
+    A Potion pile is added when any kingdom card has a Potion cost."""
+    supply = {}
+    for card in kingdom_cards:
+        count = victory_pile_count(num_players) if "Victory" in card.card_type else 10
+        supply[card.name] = [card] * count
+    if any(card.potion_cost > 0 for card in kingdom_cards):
+        from cards.alchemy.potion import Potion
+        supply["Potion"] = [Potion] * 16
+    add_standard_cards(supply, num_players, include_colony=include_colony)
+    return supply
+
+
 def add_standard_cards(supply, num_players=2, include_colony=False):
     from cards.base_set.copper import Copper
     from cards.base_set.silver import Silver
@@ -19,7 +38,7 @@ def add_standard_cards(supply, num_players=2, include_colony=False):
 
 
     # Victory cards
-    victory_count = 8 if num_players == 2 else 12
+    victory_count = victory_pile_count(num_players)
     supply["Estate"]   = [Estate for _ in range(victory_count)]
     supply["Duchy"]    = [Duchy for _ in range(victory_count)]
     supply["Province"] = [Province for _ in range(victory_count)]

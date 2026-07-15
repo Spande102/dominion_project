@@ -12,11 +12,11 @@ def mine_effect(player, game):
 
     player.hand.remove(to_trash)
     game.trash_pile.append(to_trash)
-    max_cost = to_trash.cost + 3
+    max_cost = game.card_cost(to_trash) + 3
 
     pile_name = player.choose_supply_pile(
         game, f"Gain a Treasure to your hand costing up to {max_cost}:",
-        predicate=lambda c: "Treasure" in c.card_type and c.cost <= max_cost,
+        predicate=lambda c: "Treasure" in c.card_type and game.card_cost(c) <= max_cost,
         optional=False)
     gained = player.gain_card(game, pile_name, destination='hand')
     if gained:

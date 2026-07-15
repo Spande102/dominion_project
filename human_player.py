@@ -81,6 +81,24 @@ class HumanPlayer(Player):
                 return False
             print("Please answer y or n.")
 
+    def choose_options(self, options, prompt, count=1):
+        print("\n" + prompt)
+        for i, option in enumerate(options, 1):
+            print(f"{i}. {option}")
+
+        while True:
+            hint = "number" if count == 1 else f"{count} different numbers, comma-separated"
+            choice = input(f"Choose ({hint}): ").strip()
+            try:
+                indices = [int(t.strip()) - 1 for t in choice.split(",")]
+            except ValueError:
+                print("Invalid input. Please enter numbers.")
+                continue
+            if (len(indices) == count and len(set(indices)) == count
+                    and all(0 <= i < len(options) for i in indices)):
+                return [options[i] for i in indices]
+            print(f"Please choose exactly {count} different option(s).")
+
     def choose_supply_pile(self, game, prompt, predicate=None, optional=True):
         eligible = {
             name: pile for name, pile in game.supply.items()
@@ -92,7 +110,7 @@ class HumanPlayer(Player):
 
         print("\n" + prompt)
         for name, pile in eligible.items():
-            print(f" - {name} (Cost {pile[0].cost}): {len(pile)} left")
+            print(f" - {name} (Cost {game.card_cost(pile[0])}): {len(pile)} left")
 
         skip_hint = " (or press Enter to skip)" if optional else ""
         while True:
@@ -165,7 +183,8 @@ class HumanPlayer(Player):
     def choose_buy(self, game):
         game.display_supply()
         while True:
-            buy = input(f"Buy a card (coins={self.coins}, buys={self.buys}) \n  Press Enter or type skip to skip: ").strip()
+            resources = f"coins={self.coins}" + (f", potions={self.potions}" if self.potions else "")
+            buy = input(f"Buy a card ({resources}, buys={self.buys}) \n  Press Enter or type skip to skip: ").strip()
             if game.handle_command(self, buy):
                 if not game.running:
                     return None
@@ -173,6 +192,6 @@ class HumanPlayer(Player):
             if buy == "" or buy.lower() == "skip":
                 return None
             pile_name = game.find_supply_pile(buy)
-            if pile_name and game.supply[pile_name] and game.supply[pile_name][0].cost <= self.coins:
+            if pile_name and game.can_buy(self, pile_name):
                 return pile_name
-            print("Invalid choice or not enough coins.")
+            print("You can't buy that (cost, Potion, or a restriction).")

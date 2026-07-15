@@ -5,7 +5,7 @@ from bots import BOT_TYPES
 from human_player import HumanPlayer
 from game import Game
 from cards import load_cards  # Updated __init__.py now returns cards
-from utils.supply_build import add_standard_cards
+from utils.supply_build import build_kingdom_supply
 from utils.kingdom_cards import choose_kingdom_cards
 
 
@@ -52,10 +52,6 @@ def interactive_game():
         print("Invalid kingdom card setup. Exiting.")
         return
 
-    # Create full supply: start with Kingdom cards
-    supply = {card.name: [card for _ in range(10)] for card in selected_kingdom_cards}
-
-    # Add base cards like Copper, Silver, Gold, Estates, Duchies, Provinces, Curses.
     # Per Prosperity rules, Platinum/Colony are used with a probability equal to the
     # proportion of Prosperity cards in the kingdom.
     prosperity_count = sum(1 for card in selected_kingdom_cards
@@ -64,7 +60,8 @@ def interactive_game():
     if include_colony:
         print("\nThis game uses Platinum and Colony!")
 
-    add_standard_cards(supply, num_players, include_colony=include_colony)
+    supply = build_kingdom_supply(selected_kingdom_cards, num_players,
+                                  include_colony=include_colony)
 
     print("\nFinal Supply:")
     for name in supply:

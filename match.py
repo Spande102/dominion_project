@@ -7,7 +7,7 @@ from bots import BOT_TYPES
 from cards import load_cards
 from game import Game
 from utils.kingdom_cards import random_kingdom
-from utils.supply_build import add_standard_cards
+from utils.supply_build import build_kingdom_supply
 
 
 def run_match(bot_specs, num_games=20, kingdom_cards=None, max_turns=500, seed=None):
@@ -35,8 +35,7 @@ def run_match(bot_specs, num_games=20, kingdom_cards=None, max_turns=500, seed=N
         players = players[rotation:] + players[:rotation]
 
         kingdom = kingdom_cards or random_kingdom(cards_by_expansion)
-        supply = {card.name: [card] * 10 for card in kingdom}
-        add_standard_cards(supply, num_players=len(players))
+        supply = build_kingdom_supply(kingdom, num_players=len(players))
 
         game = Game(players, supply)
         with redirect_stdout(io.StringIO()):

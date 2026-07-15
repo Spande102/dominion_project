@@ -75,5 +75,6 @@ def manually_choose_kingdom_cards(cards_by_expansion):
 
 # Helper: define what counts as a base Kingdom card
 def is_kingdom_card(card):
-    base_cards = {"Copper", "Silver", "Gold", "Estate", "Duchy", "Province", "Curse", "Platinum", "Colony"}
+    base_cards = {"Copper", "Silver", "Gold", "Estate", "Duchy", "Province", "Curse",
+                  "Platinum", "Colony", "Potion"}
     return card.name not in base_cards

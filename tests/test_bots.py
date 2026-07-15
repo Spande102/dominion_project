@@ -28,7 +28,7 @@ TEST_KINGDOM = [Village, Smithy, Laboratory, Market, Chapel,
 
 def test_bot_reveals_moat():
     bot = BigMoneyBot("B")
-    assert bot.confirm("B, reveal Moat to block the attack?") is True
+    assert bot.confirm("B, reveal Moat in response to the attack?") is True
 
 
 def test_bot_discards_junk_first_under_militia():

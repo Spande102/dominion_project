@@ -6,6 +6,13 @@ class TurnState:
     def __init__(self):
         self.merchants_played = 0
         self.silvers_played = 0
+        self.actions_played = 0            # Conspirator
+        self.cost_reduction = 0            # Bridge: all cards cost this much less
+        self.action_cost_reduction = 0     # Quarry: Actions cost this much less
+        self.copper_bonus = 0              # Coppersmith: Copper produces +1 per play
+        self.bought_victory = False        # Treasury
+        self.forbidden_buys = set()        # Contraband
+        self.war_chest_named = set()       # War Chest
 
 
 class Player:
@@ -27,8 +34,24 @@ class Player:
         self.actions = 1
         self.buys = 1
         self.coins = 0
+        self.potions = 0
         self.victory_tokens = 0
         self.turns_taken = 0
+
+        # Durations (Seaside): cards staying in play + queued next-turn effects
+        self.duration_in_play = []
+        self.next_turn_effects = []
+        # Set-aside zones and mats; all count toward scoring
+        self.set_aside = []          # Haven, Blockade, ...
+        self.island_mat = []
+        self.native_village_mat = []
+        self.pirate_ship_tokens = 0
+        # Outpost
+        self.outpost_requested = False
+        self.outpost_turn = False
+        # Gains tracked for Smugglers
+        self.gained_this_turn = []
+        self.gained_last_turn = []
 
         self.turn_state = TurnState()
 
@@ -48,6 +71,11 @@ class Player:
 
     def confirm(self, prompt):
         """A yes/no decision. Returns True or False."""
+        raise NotImplementedError
+
+    def choose_options(self, options, prompt, count=1):
+        """Choose `count` different options from a list of strings.
+        Returns a list of the chosen option strings."""
         raise NotImplementedError
 
     def choose_supply_pile(self, game, prompt, predicate=None, optional=True):
@@ -108,13 +136,33 @@ class Player:
         if not pile_name or not game.supply.get(pile_name):
             return None
         card = game.supply[pile_name].pop()
-        if destination == 'hand':
-            self.hand.append(card)
-        elif destination == 'deck':
-            self.topdeck(card)
-        else:
-            self.discard_pile.append(card)
+        zone = {'hand': self.hand, 'deck': self.deck}.get(destination, self.discard_pile)
+        zone.append(card)
+        game.notify_gain(self, card)
+
+        # Watchtower reaction: trash or topdeck the gained card
+        if (any(c.name == "Watchtower" for c in self.hand) and card in zone
+                and self.confirm(f"Reveal Watchtower in reaction to gaining {card.name}?")):
+            choice = self.choose_options(
+                ["Put it onto your deck", "Trash it"], "Watchtower:")[0]
+            zone.remove(card)
+            if choice == "Trash it":
+                game.trash_pile.append(card)
+                print(f"{self.name} trashes the gained {card.name}.")
+            else:
+                self.topdeck(card)
+                print(f"{self.name} topdecks the gained {card.name}.")
         return card
+
+    def add_duration(self, card_name, effect=None):
+        """Keep a just-played card in play until the start of next turn;
+        optionally queue effect(player, game) to run then."""
+        card = next((c for c in self.in_play if c.name == card_name), None)
+        if card:
+            self.in_play.remove(card)
+            self.duration_in_play.append(card)
+        if effect:
+            self.next_turn_effects.append(effect)
 
     def trash_card(self, card_name, game, zone='hand'):
         """
@@ -150,12 +198,26 @@ class Player:
         self.actions = 1
         self.buys = 1
         self.coins = 0
+        self.potions = 0
         self.turns_taken += 1
+        self.gained_last_turn = self.gained_this_turn
+        self.gained_this_turn = []
         self.turn_state = TurnState()
 
     def take_turn(self, game):
         self.start_turn()
         print(f"\n-- {self.name}'s Turn --")
+
+        # Resolve Duration effects queued last turn; the Duration cards then
+        # return to play and get discarded at this turn's cleanup.
+        if self.next_turn_effects or self.duration_in_play:
+            effects = self.next_turn_effects
+            self.next_turn_effects = []
+            for effect in effects:
+                effect(self, game)
+            self.in_play.extend(self.duration_in_play)
+            self.duration_in_play = []
+
         print(f"Hand: {[card.name for card in self.hand]}")
 
         # --- Action Phase ---
@@ -175,7 +237,7 @@ class Player:
         # --- Buy Phase ---
         print("\n-- Buy Phase --")
         self.play_treasures(game)
-        print(f"Coins: {self.coins}")
+        print(f"Coins: {self.coins}" + (f", Potions: {self.potions}" if self.potions else ""))
 
         while self.buys > 0:
             pile_name = self.choose_buy(game)
@@ -183,23 +245,32 @@ class Player:
                 return
             if pile_name is None:
                 break
-            pile = game.supply.get(pile_name)
-            if pile and pile[0].cost <= self.coins:
-                gained_card = pile.pop()
-                self.discard_pile.append(gained_card)
-                self.coins -= gained_card.cost
-                self.buys -= 1
-                print(f"{self.name} bought {gained_card.name}")
+            if game.can_buy(self, pile_name):
+                self.buy_card(game, pile_name)
             else:
                 print(f"Invalid buy choice: {pile_name}")
                 break  # guards against a misbehaving bot looping forever
 
         # --- Cleanup Phase ---
-        self.cleanup()
+        self.cleanup(game)
+
+    def buy_card(self, game, pile_name):
+        card = game.supply[pile_name][0]
+        self.coins -= game.card_cost(card)
+        self.potions -= card.potion_cost
+        self.buys -= 1
+        gained = self.gain_card(game, pile_name)
+        print(f"{self.name} bought {gained.name}")
+        if "Victory" in gained.card_type:
+            self.turn_state.bought_victory = True
+        game.resolve_on_buy(self, gained)
+        return gained
 
     def play_card(self, card, game):
         self.hand.remove(card)
         self.in_play.append(card)
+        if "Action" in card.card_type:
+            self.turn_state.actions_played += 1
         if card.effect:
             card.effect(self, game)
 
@@ -225,6 +296,9 @@ class Player:
         self.in_play.append(card)
         value = card.effect(self, game) if card.effect else 0
         self.coins += value or 0
+        # Coppersmith: each Copper produces an extra coin per Coppersmith played
+        if card.name == "Copper":
+            self.coins += self.turn_state.copper_bonus
         # Merchant: the first time you play a Silver this turn, +1 Coin per Merchant played
         if card.name == "Silver":
             self.turn_state.silvers_played += 1
@@ -232,16 +306,41 @@ class Player:
                 self.coins += self.turn_state.merchants_played
                 print(f"Merchant bonus: +{self.turn_state.merchants_played} Coin.")
         print(f"{self.name} plays {card.name} (coins={self.coins}).")
+        game.notify_treasure_play(self, card)
 
-    def cleanup(self):
+    def cleanup(self, game=None):
         print(f"{self.name}'s turn has ended.")
+        if game:
+            self._cleanup_topdeck_offers(game)
         self.discard_pile += self.hand + self.in_play
         self.hand = []
         self.in_play = []
-        self.draw_cards(5)
+        self.draw_cards(3 if self.outpost_requested else 5)
+
+    def _cleanup_topdeck_offers(self, game):
+        """Treasury / Alchemist / Herbalist may go back on the deck at cleanup."""
+        for card in list(self.in_play):
+            if (card.name == "Treasury" and not self.turn_state.bought_victory
+                    and self.confirm("Put Treasury on top of your deck?")):
+                self.in_play.remove(card)
+                self.topdeck(card)
+            elif (card.name == "Alchemist"
+                    and any(c.name == "Potion" for c in self.in_play)
+                    and self.confirm("Put Alchemist on top of your deck?")):
+                self.in_play.remove(card)
+                self.topdeck(card)
+            elif card.name == "Herbalist":
+                treasures = [c for c in self.in_play if "Treasure" in c.card_type]
+                if treasures and self.confirm("Herbalist: put a Treasure from play onto your deck?"):
+                    chosen = self.choose_card_from(treasures, "Choose a Treasure to topdeck:",
+                                                   optional=False)
+                    self.in_play.remove(chosen)
+                    self.topdeck(chosen)
 
     def all_cards(self):
-        return self.deck + self.hand + self.discard_pile + self.in_play
+        return (self.deck + self.hand + self.discard_pile + self.in_play
+                + self.duration_in_play + self.set_aside
+                + self.island_mat + self.native_village_mat)
 
     def get_victory_points(self):
         return (
